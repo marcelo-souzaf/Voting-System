@@ -10,40 +10,44 @@ class Vote {
  private:
     Date date;
     uint user_id;
+    uint vote_id;
     short candidate_id;
     char abbrev[2];
-    Vote* next;
 
  public:
     Vote() {
+        this->date = Date();
         this->user_id = 0;
+        this->vote_id = 0;
         this->candidate_id = 0;
         this->abbrev[0] = 0;
         this->abbrev[1] = 0;
-        this->next = nullptr;
     }
 
-    Vote(uint user_id, short candidate_id, const char* abbrev) :
-        user_id(user_id), candidate_id(candidate_id) {
-        this->abbrev[0] = abbrev[0];
-        this->abbrev[1] = abbrev[1];
+    Vote(uint vote_id, uint user_id, short candidate_id, const char* abbrev) :
+        user_id(user_id), vote_id(vote_id), candidate_id(candidate_id) {
         this->date = Date(std::time(nullptr));
-        this->next = nullptr;
-    }
-
-    Vote(uint user_id, short candidate_id, const char* abbrev, Date date) :
-    user_id(user_id), candidate_id(candidate_id), date(date) {
         this->abbrev[0] = abbrev[0];
         this->abbrev[1] = abbrev[1];
-        this->next = nullptr;
     }
 
-    ~Vote() {
-        delete this->next;
+    Vote(uint vote_id, uint user_id, short candidate_id, const char* abbrev,
+    Date date) : user_id(user_id), vote_id(vote_id),
+                candidate_id(candidate_id), date(date) {
+        this->abbrev[0] = abbrev[0];
+        this->abbrev[1] = abbrev[1];
+    }
+
+    uint get_vote_id() const {
+        return this->vote_id;
     }
 
     uint get_user_id() const {
         return this->user_id;
+    }
+
+    void set_null() {
+        this->user_id = 0;
     }
 
     short get_candidate_id() const {
@@ -58,16 +62,12 @@ class Vote {
         return this->abbrev;
     }
 
-    Vote* get_next() const {
-        return this->next;
-    }
-
-    void enlist(Vote* vote) {
-        if (this->next != nullptr) {
-            std::invalid_argument("Voto já possui voto encadeado.");
-        }
-        this->next = vote;
-        std::cout << "Colisão" << std::endl;
+    void print() const {
+        std::cout << "Recibo: " << this->vote_id << std::endl;
+        std::cout << "ID do Eleitor: " << this->user_id << std::endl;
+        std::cout << "ID do Candidato: " << this->candidate_id << std::endl;
+        std::cout << "Estado: " << this->abbrev[0] << this->abbrev[1] << std::endl;
+        std::cout << "Data: " << this->date << std::endl;
     }
 };
 

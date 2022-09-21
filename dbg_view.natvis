@@ -4,7 +4,26 @@
         <DisplayString>{capacity}</DisplayString>
         <Expand>
             <ArrayItems>
+                <Size>capacity</Size>
+                <ValuePointer>data</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="Stack">
+        <DisplayString>{capacity}</DisplayString>
+        <Expand>
+            <ArrayItems>
                 <Size>size</Size>
+                <ValuePointer>data</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="Vetor&lt;*&gt;">
+        <DisplayString>{_size}</DisplayString>
+        <Expand>
+            <Item Name="Capacity">_capacity</Item>
+            <ArrayItems>
+                <Size>_size</Size>
                 <ValuePointer>data</ValuePointer>
             </ArrayItems>
         </Expand>
