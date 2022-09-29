@@ -32,10 +32,10 @@ class Vote {
     }
 
     Vote(uint vote_id, uint user_id, short candidate_id, const char* abbrev,
-    Date date) : user_id(user_id), vote_id(vote_id),
-                candidate_id(candidate_id), date(date) {
+    time_t timestamp) : user_id(user_id), vote_id(vote_id), candidate_id(candidate_id) {
         this->abbrev[0] = abbrev[0];
         this->abbrev[1] = abbrev[1];
+        this->date = Date(timestamp);
     }
 
     uint get_vote_id() const {
@@ -70,5 +70,11 @@ class Vote {
         std::cout << "Data: " << this->date << std::endl;
     }
 };
+
+std::ostream& operator<<(std::ostream& out, const Vote& vote) {
+    out << vote.get_vote_id() << "," << vote.get_user_id() << "," << vote.get_candidate_id() \
+    << "," << vote.get_abbrev()[0] << vote.get_abbrev()[1] << "," << vote.get_date() << '\n';
+    return out;
+}
 
 #endif  // VOTE_HPP_

@@ -9,6 +9,9 @@
             </ArrayItems>
         </Expand>
     </Type>
+    <Type Name="Date">
+        <DisplayString>{year,d}-{month,d}-{day,d} {hour,d}:{minute,d}:{second,d} {Time::week_days[weekday],s8b}</DisplayString>
+    </Type>
     <Type Name="Stack">
         <DisplayString>{capacity}</DisplayString>
         <Expand>

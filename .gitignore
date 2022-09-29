@@ -41,5 +41,6 @@
 *.app
 
 # Other files
+*.csv
 .vscode/
 ignore/

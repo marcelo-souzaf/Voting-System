@@ -1,6 +1,8 @@
 #ifndef VOTING_HPP_
 #define VOTING_HPP_
 
+#include <string>
+
 #include "./vote.hpp"
 #include "./stack.hpp"
 
@@ -40,16 +42,31 @@ class Roberto {
         return index;
     }
 
+    uint vote(uint user_id, short candidate_id, const char* abbrev, time_t timestamp) {
+        if (this->current_idx == this->capacity - 1 && !this->deleted) {
+            this->resize();
+        }
+        uint index = this->deleted ? this->deleted.pop() : this->current_idx++;
+        this->data[index] = Vote(index, user_id, candidate_id, abbrev, timestamp);
+        return index;
+    }
+
     void remove(uint vote_id) {
         this->data[vote_id].set_null();
         this->deleted.push(vote_id);
     }
 
-    Vote search(uint vote_id) {
+    Vote& search(uint vote_id) {
         if (this->data[vote_id].get_user_id() == 0) {
-            throw std::invalid_argument("Voto não encontrado.");
+            throw std::invalid_argument("Voto de ID " + std::to_string(vote_id) + " não encontrado.");
         }
         return this->data[vote_id];
+    }
+
+    void describe() {
+        std::cout << "Highest vote count: " << this->current_idx << std::endl;
+        std::cout << "Current capacity: " << this->capacity << std::endl;
+        std::cout << "Deleted votes: " << this->deleted.get_size() << std::endl;
     }
 };
 

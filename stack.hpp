@@ -41,6 +41,14 @@ class Stack {
         return this->data[--this->size];
     }
 
+    uint get_size() {
+        return this->size;
+    }
+
+    uint get_capacity() {
+        return this->capacity;
+    }
+
     explicit operator bool() {
         return this->size > 0;
     }
