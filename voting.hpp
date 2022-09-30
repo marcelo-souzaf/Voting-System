@@ -10,8 +10,13 @@
 // Laguardia disse que é um bom nome para uma classe
 class Roberto {
  public:
-    Vote* data;
+    struct PairCount {
+        short candidate_id;
+        uint count;
+    }; 
+
  private:
+    Vote* data;
     Stack deleted;
     uint capacity;
     uint current_idx;
@@ -24,6 +29,7 @@ class Roberto {
         std::copy(old_data, old_data + this->current_idx, this->data);
         delete[] old_data;
     }
+
 
  public:
     Roberto() {
@@ -84,8 +90,69 @@ class Roberto {
         return sorted;
     }
 
+    // Função que engloba a seleção dos topK candidatos, retornando
+    // uma array de structs que contém o id do candidato e a sua respectiva
+    // quantidade de votos, ordenada por essa quantidade
+    Roberto::PairCount* topK_sorted(uint k, Date beginning, Date end) {
+        uint* counts = this->votecount_by_date(beginning, end);
+        short* candidates = this->topK_candidates(k, beginning, end);
+        Roberto::PairCount* pairs = new Roberto::PairCount[k];
+        for (int i = 0; i < k; i++) {
+            pairs[i].candidate_id = candidates[i];
+            pairs[i].count = counts[candidates[i]-1];
+        }
+        // Bubble sort otimizado, bom para esse contexto
+        // pois o vetor está próximo de ser ordenado
+        // O(k^2) no pior caso, mas como k é uma constante pequena no caso
+        // de uso do trabalho (que será k=10), o custo computacional é baixo
+        for (int i = 0; i < k; i++) {
+            bool flag = false;
+            for (int j = 0; j < k-i-1; j++) {
+                if (pairs[j].count < pairs[j+1].count) {
+                    flag = true;
+                    PairCount temp = pairs[j]; 
+                    pairs[j] = pairs[j+1];
+                    pairs[j+1] = temp;
+                }
+            }
+            if (!flag) {
+                break;
+            }
+        }
+        return pairs;
+    }
+
+    Roberto::PairCount* topK_sorted(uint k) {
+        uint* counts = this->votecount_by_date();
+        short* candidates = this->topK_candidates(k);
+        Roberto::PairCount* pairs = new Roberto::PairCount[k];
+        for (int i = 0; i < k; i++) {
+            pairs[i].candidate_id = candidates[i];
+            pairs[i].count = counts[candidates[i]-1];
+        }
+        // Bubble sort otimizado, bom para esse contexto
+        // pois o vetor está próximo de ser ordenado
+        // O(k^2) no pior caso, mas como k é uma constante pequena no caso
+        // de uso do trabalho (que será k=10), o custo computacional é baixo
+        for (int i = 0; i < k; i++) {
+            bool flag = false;
+            for (int j = 0; j < k-i-1; j++) {
+                if (pairs[j].count < pairs[j+1].count) {
+                    flag = true;
+                    PairCount temp = pairs[j]; 
+                    pairs[j] = pairs[j+1];
+                    pairs[j+1] = temp;
+                }
+            }
+            if (!flag) {
+                break;
+            }
+        }
+        return pairs;
+    }
+
     short* topK_candidates(int k, Date beginning, Date end) {
-        short* top10 = new short[10];
+        short* topk = new short[k];
         uint* counts = votecount_by_date(beginning, end); 
         uint temp[this->candidate_count];
         for (uint i = 0; i < this->candidate_count; i++) {
@@ -96,29 +163,29 @@ class Roberto {
         int aux = 0;
         for (int i = 0; i < candidate_count; i++) {
             if (counts[i] > element_kth) {
-                top10[aux++] = i;
+                topk[aux++] = i+1; // +1 porque o índice do vetor é o id do candidato - 1
             }
-            if (aux == 10) {
+            if (aux == k) {
                 break;
             }
         } 
         // Separei em dois loops para lidar com empates (senão, haveria a possi-
-        // bilidade de retornar 10 dos candidatos com a quantidade de votos iguais
+        // bilidade de retornar k dos candidatos com a quantidade de votos iguais
         // ao k-ésimo maior, enquanto os valores maiores que o k-ésimo não seriam
         // retornados)
         for (int i = 0; i < candidate_count; i++) {
-            if (aux == 10) {
+            if (aux == k) {
                 break;
             }
             if (counts[i] == element_kth) {
-                top10[aux++] = i;
+                topk[aux++] = i+1;
             }
         }
-        return top10;
+        return topk;
     }
 
     short* topK_candidates(int k) {
-        short* top10 = new short[10];
+        short* topk = new short[k];
         uint* counts = votecount_by_date(); 
         uint temp[this->candidate_count];
         for (uint i = 0; i < this->candidate_count; i++) {
@@ -129,28 +196,30 @@ class Roberto {
         int aux = 0;
         for (int i = 0; i < candidate_count; i++) {
             if (counts[i] > element_kth) {
-                top10[aux++] = i;
+                topk[aux++] = i+1; // +1 porque o índice do vetor é o id do candidato - 1
             }
-            if (aux == 10) {
+            if (aux == k) {
                 break;
             }
         } 
         // Separei em dois loops para lidar com empates (senão, haveria a possi-
-        // bilidade de retornar 10 dos candidatos com a quantidade de votos iguais
+        // bilidade de retornar k dos candidatos com a quantidade de votos iguais
         // ao k-ésimo maior, enquanto os valores maiores que o k-ésimo não seriam
         // retornados)
         for (int i = 0; i < candidate_count; i++) {
-            if (aux == 10) {
+            if (aux == k) {
                 break;
             }
             if (counts[i] == element_kth) {
-                top10[aux++] = i;
+                topk[aux++] = i+1;
             }
         }
-        return top10;
+        return topk;
     }
     
     uint* votecount_by_date(Date beginning, Date end) {
+        // Como a quantidade de candidatos únicos é baixa, não há
+        // necessidade de usar uma tabela hash complexa
         uint* votecount = new uint[this->candidate_count];
         for (int i = 0; i < this->candidate_count; i++) {
             votecount[i] = 0;
@@ -167,6 +236,8 @@ class Roberto {
     }
 
     uint* votecount_by_date() {
+        // Como a quantidade de candidatos únicos é baixa, não há
+        // necessidade de usar uma tabela hash complexa
         uint* votecount = new uint[this->candidate_count];
         for (int i = 0; i < this->candidate_count; i++) {
             votecount[i] = 0;
