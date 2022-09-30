@@ -7,7 +7,7 @@
 using std::cout;
 using std::endl;
 
-int main() {
+int main2() {
     cout << "Bytes da classe de voto: " << sizeof(Vote) << endl;
     const char states[27][3] = {"AC", "AL", "AP", "AM", "BA", "CE", "DF",
                                 "ES", "GO", "MA", "MT", "MS", "MG", "PA",
@@ -47,7 +47,7 @@ int main() {
         // }
 
         // Cuidado para não passar de 100 milhões
-        const int number_of_votes = 100'000;
+        const int number_of_votes = 10;
         for (int i = 0; i < number_of_votes; ++i) {
             machine.vote(user_distrib(gen), candidate_distrib(gen),
                 states[state_distrib(gen)], std::time(nullptr) + time_distrib(gen));
@@ -67,5 +67,22 @@ int main() {
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> diff = end - start;
     std::cout << "Tempo passado: " << diff.count() << std::endl;
+    return 0;
+}
+
+int main() {
+
+    Roberto machine = Roberto();
+    machine.vote(1, 1, "SP", std::time(nullptr)+3600);
+    machine.vote(2, 1, "MG", std::time(nullptr));
+    machine.vote(3, 2, "RJ", std::time(nullptr)+7200);
+
+    machine.describe();
+    Vote* resultados = machine.sorted_by_data();
+    for (int i = 0; i < 3; i++) {
+        resultados[i].print();
+        cout << endl;
+    }
+
     return 0;
 }

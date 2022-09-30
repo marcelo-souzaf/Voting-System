@@ -68,6 +68,50 @@ class Roberto {
         std::cout << "Current capacity: " << this->capacity << std::endl;
         std::cout << "Deleted votes: " << this->deleted.get_size() << std::endl;
     }
+
+    Vote* sorted_by_data() {
+        Vote* sorted = new Vote[this->current_idx - this->deleted.get_size()];
+        uint sorted_idx = 0;
+        for (uint i = 0; i < this->current_idx; i++) {
+            if (this->data[i].get_user_id() != 0) {
+                sorted[sorted_idx++] = this->data[i];
+            }
+        }
+        quick_sort(sorted, 0, sorted_idx - 1);
+        return sorted;
+    }
+
+    private:
+    void quick_sort(Vote* data, uint left, uint right) {
+        uint i = left, j = right;
+        Vote tmp;
+        Vote pivot = data[(left + right) / 2];
+
+        /* partition */
+        while (i <= j) {
+            while (data[i].get_date() < pivot.get_date()) {
+                i++;
+            }
+            while (data[j].get_date() > pivot.get_date()) {
+                j--;
+            }
+            if (i <= j) {
+                tmp = data[i];
+                data[i] = data[j];
+                data[j] = tmp;
+                i++;
+                j--;
+            }
+        };
+
+        /* recursion */
+        if (left < j) {
+            this->quick_sort(data, left, j);
+        }
+        if (i < right) {
+            this->quick_sort(data, i, right);
+        }
+    }
 };
 
 #endif  // VOTING_HPP_
