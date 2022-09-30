@@ -137,18 +137,10 @@ class Date {
     int8 second;
     int8 weekday;
 
-    Date() {
-        this->year = 0;
-        this->month = 0;
-        this->day = 0;
-        this->hour = 0;
-        this->minute = 0;
-        this->second = 0;
-        this->weekday = 0;
-    }
+    Date() {}
 
     Date(short year, int8 month, int8 day,
-    int8 hour = 0, int8 minute = 0, int8 second = 0, int8 weekday = 0) {
+    int8 hour = 0, int8 minute = 0, int8 second = 0, int8 weekday = -1) {
         this->year = year;
         if (month > 12 || month < 1) {
             throw std::invalid_argument("Mês inválido.");
@@ -170,7 +162,11 @@ class Date {
             throw std::invalid_argument("Segundo inválido.");
         }
         this->second = second;
-        this->compute_weekday();
+        if (weekday < 0) {
+            this->compute_weekday();
+        } else {
+            this->weekday = weekday;
+        }
     }
 
     Date(time_t remaining_seconds, bool local = true) {
