@@ -19,7 +19,7 @@ int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<uint> user_distrib(1U, 10'000'000U);
-    std::uniform_int_distribution<short> candidate_distrib(0, 32766);
+    std::uniform_int_distribution<short> candidate_distrib(0, 5000);
     std::uniform_int_distribution<int> state_distrib(0, 26);
     std::uniform_int_distribution<int> time_distrib(-5 * Time::DAY, 5 * Time::DAY);
 
@@ -58,9 +58,20 @@ int main() {
         }
         machine.describe();
 
-        uint* counts = machine.votecount_by_date();
+        Date beginning = Date(std::time(nullptr));
+        Date end = Date(std::time(nullptr)+1000);
 
-        short* candidates = machine.top10_candidates();
+        uint* counts = machine.votecount_by_date(beginning, end);
+        short* candidates = machine.topK_candidates(10, beginning, end);
+        cout << "Top 10 candidatos: " << endl;
+        for (int i = 0; i < 10; i++) {
+            cout << "ID: " << candidates[i] << endl;
+            cout << "Contagem: " << counts[candidates[i]] << endl;
+        }
+
+
+        counts = machine.votecount_by_date();
+        candidates = machine.topK_candidates(10);
         cout << "Top 10 candidatos: " << endl;
         for (int i = 0; i < 10; i++) {
             cout << "ID: " << candidates[i] << endl;

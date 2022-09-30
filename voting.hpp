@@ -84,48 +84,72 @@ class Roberto {
         return sorted;
     }
 
-    short* top10_candidates(Date beginning, Date end) {
+    short* topK_candidates(int k, Date beginning, Date end) {
         short* top10 = new short[10];
         uint* counts = votecount_by_date(beginning, end); 
         uint temp[this->candidate_count];
         for (uint i = 0; i < this->candidate_count; i++) {
             temp[i] = counts[i];
         }
-
-        int element_10th = quickselect(temp, 0, this->candidate_count - 1, 10);
+        int k_inv = this->candidate_count - k;
+        int element_kth = quickselect(temp, 0, this->candidate_count - 1, k_inv);
         int aux = 0;
         for (int i = 0; i < candidate_count; i++) {
-            if (counts[i] <= element_10th) {
+            if (counts[i] > element_kth) {
                 top10[aux++] = i;
             }
             if (aux == 10) {
                 break;
             }
+        } 
+        // Separei em dois loops para lidar com empates (senão, haveria a possi-
+        // bilidade de retornar 10 dos candidatos com a quantidade de votos iguais
+        // ao k-ésimo maior, enquanto os valores maiores que o k-ésimo não seriam
+        // retornados)
+        for (int i = 0; i < candidate_count; i++) {
+            if (aux == 10) {
+                break;
+            }
+            if (counts[i] == element_kth) {
+                top10[aux++] = i;
+            }
         }
         return top10;
     }
 
-    short* top10_candidates() {
+    short* topK_candidates(int k) {
         short* top10 = new short[10];
         uint* counts = votecount_by_date(); 
         uint temp[this->candidate_count];
         for (uint i = 0; i < this->candidate_count; i++) {
             temp[i] = counts[i];
         }
-
-        int element_10th = quickselect(temp, 0, this->candidate_count - 1, 10);
+        int k_inv = this->candidate_count - k;
+        int element_kth = quickselect(temp, 0, this->candidate_count - 1, k_inv);
         int aux = 0;
         for (int i = 0; i < candidate_count; i++) {
-            if (counts[i] <= element_10th) {
+            if (counts[i] > element_kth) {
                 top10[aux++] = i;
             }
             if (aux == 10) {
                 break;
             }
+        } 
+        // Separei em dois loops para lidar com empates (senão, haveria a possi-
+        // bilidade de retornar 10 dos candidatos com a quantidade de votos iguais
+        // ao k-ésimo maior, enquanto os valores maiores que o k-ésimo não seriam
+        // retornados)
+        for (int i = 0; i < candidate_count; i++) {
+            if (aux == 10) {
+                break;
+            }
+            if (counts[i] == element_kth) {
+                top10[aux++] = i;
+            }
         }
         return top10;
     }
-
+    
     uint* votecount_by_date(Date beginning, Date end) {
         uint* votecount = new uint[this->candidate_count];
         for (int i = 0; i < this->candidate_count; i++) {
