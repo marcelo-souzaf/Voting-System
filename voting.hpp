@@ -87,7 +87,33 @@ class Roberto {
     short* top10_candidates(Date beginning, Date end) {
         short* top10 = new short[10];
         uint* counts = votecount_by_date(beginning, end); 
-        int element_10th = quickselect(counts, 0, this->candidate_count - 1, 10);
+        uint temp[this->candidate_count];
+        for (uint i = 0; i < this->candidate_count; i++) {
+            temp[i] = counts[i];
+        }
+
+        int element_10th = quickselect(temp, 0, this->candidate_count - 1, 10);
+        int aux = 0;
+        for (int i = 0; i < candidate_count; i++) {
+            if (counts[i] <= element_10th) {
+                top10[aux++] = i;
+            }
+            if (aux == 10) {
+                break;
+            }
+        }
+        return top10;
+    }
+
+    short* top10_candidates() {
+        short* top10 = new short[10];
+        uint* counts = votecount_by_date(); 
+        uint temp[this->candidate_count];
+        for (uint i = 0; i < this->candidate_count; i++) {
+            temp[i] = counts[i];
+        }
+
+        int element_10th = quickselect(temp, 0, this->candidate_count - 1, 10);
         int aux = 0;
         for (int i = 0; i < candidate_count; i++) {
             if (counts[i] <= element_10th) {
@@ -102,6 +128,9 @@ class Roberto {
 
     uint* votecount_by_date(Date beginning, Date end) {
         uint* votecount = new uint[this->candidate_count];
+        for (int i = 0; i < this->candidate_count; i++) {
+            votecount[i] = 0;
+        }
         for (uint i = 0; i < this->current_idx; i++) {
             if (this->data[i].get_user_id() != 0) {
                 if (this->data[i].get_date() >= beginning &&
@@ -115,6 +144,9 @@ class Roberto {
 
     uint* votecount_by_date() {
         uint* votecount = new uint[this->candidate_count];
+        for (int i = 0; i < this->candidate_count; i++) {
+            votecount[i] = 0;
+        }
         for (uint i = 0; i < this->current_idx; i++) {
             if (this->data[i].get_user_id() != 0) {
                 votecount[this->data[i].get_candidate_id()-1]++;
