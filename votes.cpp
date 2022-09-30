@@ -84,5 +84,18 @@ int main() {
         cout << endl;
     }
 
+    Date beginning = Date(std::time(nullptr)); 
+    Date end = Date(std::time(nullptr)+3600);
+    uint* counts = machine.votecount_by_date(beginning, end);
+    for (int i = 0; i < 3; i++) {
+        cout << counts[i] << endl;
+    }
+
+    short* candidates = machine.top10_candidates(beginning, end);
+    cout << "Top 10 candidatos: " << endl;
+    for (int i = 0; i < 10; i++) {
+        cout << candidates[i] << endl;
+    }
+
     return 0;
 }
