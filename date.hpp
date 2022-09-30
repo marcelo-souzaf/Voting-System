@@ -20,112 +20,6 @@ namespace Time {
                                         "Quinta", "Sexta", "Sábado"};
 }  // namespace Time
 
-// Classe descartada que funcionaria com RadixSort
-// class Date {
-//  public:
-//     char date[16];
-
-//     Date() {
-//         // for (int i = 0; i < 16; i++) {
-//         //     this->date[i] = 0;
-//         // }
-//         this->date[0] = 0;
-//     }
-
-//     Date(const Date& other) {
-//         if (other.date[0] == 0) {
-//             this->date[0] = 0;
-//         } else {
-//             std::copy(other.date, other.date + 16, this->date);
-//         }
-//     }
-
-//     Date(short year, uint8 month, uint8 day,
-//     uint8 hour = 0, uint8 minute = 0, uint8 second = 0) {
-//         if (month > 12 || month < 1) {
-//             throw std::invalid_argument("Mês inválido.");
-//         }
-//         if (day > 31 || day < 1) {
-//             throw std::invalid_argument("Dia inválido.");
-//         }
-//         if (hour > 23) {
-//             throw std::invalid_argument("Hora inválida.");
-//         }
-//         if (minute > 59) {
-//             throw std::invalid_argument("Minuto inválido.");
-//         }
-//         if (second > 59) {
-//             throw std::invalid_argument("Segundo inválido.");
-//         }
-//         sprintf(this->date, "%04u%02u%02u%02u%02u%02u%02u",
-//             year, month, day, hour, minute, second,
-//             this->compute_weekday(year, month, day));
-//     }
-
-//     Date(time_t remaining_seconds, bool local = true) {
-//         if (local) {
-//             remaining_seconds -= Time::HOUR * 3;
-//         }
-//         short year = remaining_seconds / Time::YEAR;
-//         remaining_seconds %= Time::YEAR;
-//         // 1972 foi o primeiro ano bissexto depois de 1970, que é o valor 0
-//         bool is_leap_year = (year + 2) % 4 == 0;
-//         short leap_year_count = (year + 2) / 4 - (is_leap_year ? 1 : 0);
-//         // Se não há segundos suficientes para remover os dias de ano bissexto,
-//         // subtrai um ano do número de anos e adiciona os segundos de um ano
-//         if (remaining_seconds < leap_year_count * Time::DAY) {
-//             --year;
-//             remaining_seconds += Time::YEAR;
-//         }
-//         remaining_seconds -= leap_year_count * Time::DAY;
-//         year += 1970;
-//         // Obtém o número de dias do ano, somando 1 para que o dia 1 seja 1
-//         uint8 month;
-//         short day = (remaining_seconds / Time::DAY) + 1;
-//         remaining_seconds %= Time::DAY;
-//         // Compara com o número de dias de cada mês para obter o número do mês
-//         for (short i = 0; i < 12; ++i) {
-//             if (day <= Time::cumulative_days[i]) {
-//                 // Se o ano é bissexto, subtrai um dia
-//                 if (is_leap_year && i > 1) {
-//                     --day;
-//                     // Se o dia era o primeiro do mês antes da subtração,
-//                     // decrementa o valor do mês
-//                     if (day == Time::cumulative_days[i - 1]) {
-//                         --i;
-//                         // Se o mês é fevereiro, soma um dia e chega em 29
-//                         if (i == 1) {
-//                             ++day;
-//                         }
-//                     }
-//                 }
-//                 month = i + 1;
-//                 day -= i == 0 ? 0 : Time::cumulative_days[i - 1];
-//                 break;
-//             }
-//         }
-//         // Obtém o número de horas do dia
-//         uint8 hour = remaining_seconds / Time::HOUR;
-//         remaining_seconds %= Time::HOUR;
-//         // Obtém o número de minutos da hora
-//         uint8 minute = remaining_seconds / Time::MINUTE;
-//         uint8 second = remaining_seconds % Time::MINUTE;
-//         // Obtém o dia da semana
-//         sprintf(this->date, "%04u%02u%02u%02u%02u%02u%02u",
-//             year, month, day, hour, minute, second,
-//             this->compute_weekday(year, month, day));
-//     }
-
-//     uint8 compute_weekday(short year, uint8 month, uint8 day) {
-//         uint8 weekday;
-//         if (month < 3) --year;
-//         weekday = std::abs(static_cast<int>(year + year / 4 - year / 100 + \
-//                             year / 400 + Time::table[month - 1] + day)) % 7;
-//         if (month < 3) ++year;
-//         return weekday;
-//     }
-// };
-
 // Apenas para datas de 1970 a 2099
 class Date {
     public:
@@ -225,6 +119,7 @@ class Date {
         this->compute_weekday();
     }
 
+    // Usa algum algoritmo sem nome para calcular o dia da semana
     void compute_weekday() {
         if (month < 3) --year;
         this->weekday = std::abs(year + year / 4 - year / 100 + \

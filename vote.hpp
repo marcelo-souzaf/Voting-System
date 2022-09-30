@@ -32,9 +32,9 @@ class Vote {
 
     Vote(uint vote_id, uint user_id, short candidate_id, const char* abbrev,
     time_t timestamp) : user_id(user_id), vote_id(vote_id), candidate_id(candidate_id) {
+        this->date = Date(timestamp);
         this->abbrev[0] = abbrev[0];
         this->abbrev[1] = abbrev[1];
-        this->date = Date(timestamp);
     }
 
     uint get_vote_id() const {
