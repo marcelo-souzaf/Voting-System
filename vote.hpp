@@ -16,12 +16,11 @@ class Vote {
 
  public:
     Vote() {
-        this->date = Date();
         this->user_id = 0;
-        this->vote_id = 0;
-        this->candidate_id = 0;
-        this->abbrev[0] = 0;
-        this->abbrev[1] = 0;
+    }
+
+    ~Vote() {
+        this->user_id = 0;
     }
 
     Vote(uint vote_id, uint user_id, short candidate_id, const char* abbrev) :
