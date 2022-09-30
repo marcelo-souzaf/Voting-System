@@ -259,6 +259,33 @@ class Date {
         return false;
     }
 
+    bool operator<=(const Date& other) {
+        if (this->year < other.year) {
+            return true;
+        } else if (this->year == other.year) {
+            if (this->month < other.month) {
+                return true;
+            } else if (this->month == other.month) {
+                if (this->day < other.day) {
+                    return true;
+                } else if (this->day == other.day) {
+                    if (this->hour < other.hour) {
+                        return true;
+                    } else if (this->hour == other.hour) {
+                        if (this->minute < other.minute) {
+                            return true;
+                        } else if (this->minute == other.minute) {
+                            if (this->second <= other.second) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     bool operator>(const Date& other) {
         if (this->year > other.year) {
             return true;
@@ -285,6 +312,34 @@ class Date {
         }
         return false;
     }
+
+    bool operator>=(const Date& other) {
+        if (this->year > other.year) {
+            return true;
+        } else if (this->year == other.year) {
+            if (this->month > other.month) {
+                return true;
+            } else if (this->month == other.month) {
+                if (this->day > other.day) {
+                    return true;
+                } else if (this->day == other.day) {
+                    if (this->hour > other.hour) {
+                        return true;
+                    } else if (this->hour == other.hour) {
+                        if (this->minute > other.minute) {
+                            return true;
+                        } else if (this->minute == other.minute) {
+                            if (this->second >= other.second) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 };
 
 std::ostream& operator<<(std::ostream& out, const Date& date) {
