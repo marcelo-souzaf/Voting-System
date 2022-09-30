@@ -33,7 +33,7 @@ void insertNVotes (Roberto* machine, int n) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<uint> user_distrib(1U, 10'000'000U);
-    std::uniform_int_distribution<short> candidate_distrib(0, 100);
+    std::uniform_int_distribution<short> candidate_distrib(0, 1000);
     std::uniform_int_distribution<int> state_distrib(0, 26);
     std::uniform_int_distribution<int> time_distrib(-5 * Time::DAY, 5 * Time::DAY);
 
@@ -48,4 +48,10 @@ void insertNVotes (Roberto* machine, int n) {
 void sortVotes (Roberto* machine, int n) {
     insertNVotes(machine, n);
     machine->sorted_by_data();
+}
+
+// Função para medição de tempo de seleção - Tempo esperado O(n) (Não garantido no pior caso)
+void topK (Roberto* machine, int k) {
+    insertNVotes(machine, k);
+    machine->topK_sorted(10);
 }

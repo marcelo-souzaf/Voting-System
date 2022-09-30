@@ -40,21 +40,18 @@ int main() {
         Date beginning = Date(std::time(nullptr));
         Date end = Date(std::time(nullptr)+1000);
 
-        uint* counts = machine.votecount_by_date(beginning, end);
-        short* candidates = machine.topK_candidates(10, beginning, end);
+        Roberto::PairCount *count = machine.topK_sorted(10, beginning, end);
         cout << "Top 10 candidatos: " << endl;
         for (int i = 0; i < 10; i++) {
-            cout << "ID: " << candidates[i] << endl;
-            cout << "Contagem: " << counts[candidates[i]] << endl;
+            cout << "ID: " << count[i].candidate_id << endl;
+            cout << "Contagem: " << count[i].count << endl;
         }
 
-
-        counts = machine.votecount_by_date();
-        candidates = machine.topK_candidates(10);
+        count = machine.topK_sorted(10);
         cout << "Top 10 candidatos: " << endl;
         for (int i = 0; i < 10; i++) {
-            cout << "ID: " << candidates[i] << endl;
-            cout << "Contagem: " << counts[candidates[i]] << endl;
+            cout << "ID: " << count[i].candidate_id << endl;
+            cout << "Contagem: " << count[i].count << endl;
         }
 
         file.close();
