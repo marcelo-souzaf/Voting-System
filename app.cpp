@@ -2,7 +2,7 @@
 #include <ctime>
 //nanosleep()
 
-#include "./voting.hpp"
+#include "include/voting.hpp"
 
 using std::cout;
 using std::cin;
@@ -48,17 +48,17 @@ bool handle_invalid_input(){
 }
 
 // function for voting interface
-int vote(Roberto* machine){
+int vote(System* machine){
     int id, candidate;
     cout << "Digite seu ID: ";
     cin >> id;
-    if (handle_invalid_input()){
+    if (handle_invalid_input() || id <= 0){
         clear();
         return -1;
     }
     cout << "Digite o número do candidato em que deseja votar: ";
     cin >> candidate;
-    if (handle_invalid_input()){
+    if (handle_invalid_input() || id <= 0){
         clear();
         return -1;
     }
@@ -69,9 +69,9 @@ int vote(Roberto* machine){
 }
 
 // function for dealing with admin choices
-int admin(int choice, Roberto* machine){
+int admin(int choice, System* machine){
     Vector<Vote> results;
-    Roberto::PairCount* topid;
+    Vector<System::PairCount> topid;
     char state[2];
     switch (choice)
     {
@@ -84,7 +84,7 @@ int admin(int choice, Roberto* machine){
         // cin >> state;
         // handle_invalid_input();
 
-        results = machine->sorted_by_data();
+        results = machine->sorted_by_date();
         for (int i = 0; i < results.size(); i++){
             results[i].print();
         }
@@ -120,8 +120,8 @@ int main(){
     // declaring and initializing some vars
     int choice = -1;
     int code;
-    Vote recieved;
-    Roberto machine = Roberto();
+    Vote received;
+    System machine = System();
     // main loop
     while (choice != 0)
     {   
@@ -129,7 +129,7 @@ int main(){
         cout << "Bem-vindo às eleições da FGV\nEscolha a opção desejada: " << endl;
         cout << "1. Votar em um candidato." << endl;
         cout << "2. Consultar seu voto." << endl;
-        cout << "3. Operações de adminstrador." << endl;
+        cout << "3. Operações de administrador." << endl;
         cout << "0. Encerrar sessão." << endl;
         cout << "Opção: ";
         cin >> choice;
@@ -160,10 +160,10 @@ int main(){
                 clear();
                 break;
             }
-            recieved = machine.search(code);
+            received = machine.search(code);
             clear();
 
-            recieved.print();
+            received.print();
 
             wait(5000); // waits 5 secs
 
