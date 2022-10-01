@@ -112,16 +112,14 @@ class Roberto {
 
     // Cria uma cópia de todos os votos válidos atualmente e os ordena
     Vector<Vote> sorted_by_data() {
-        Vector<Vote> result(this->current_idx - this->deleted.get_size());
-        Vote* sorted = result.data();
-        uint sorted_idx = 0;
+        Vector<Vote> sorted(this->current_idx - this->deleted.get_size());
         for (uint i = 0; i < this->current_idx; ++i) {
             if (this->data[i].get_user_id() != 0) {
-                sorted[sorted_idx++] = this->data[i];
+                sorted.push_back(this->data[i]);
             }
         }
-        quick_sort(sorted, 0, sorted_idx - 1);
-        return result;
+        quicksort(sorted.data(), 0, sorted.size() - 1);
+        return sorted;
     }
 
     // Função que engloba a seleção dos topK candidatos, retornando
@@ -286,21 +284,19 @@ class Roberto {
     
 
  private:
-    void quick_sort(Vote* data, uint left, uint right) {
+    void quicksort(Vote* data, int left, int right) {
         int i = left, j = right;
-        Vote tmp;
         Vote pivot = data[(left + right) / 2];
-
         /* partition */
         while (i <= j) {
             while (data[i].get_date() < pivot.get_date()) {
                 ++i;
             }
             while (data[j].get_date() > pivot.get_date()) {
-                ++j;
+                --j;
             }
             if (i <= j) {
-                tmp = data[i];
+                Vote tmp = data[i];
                 data[i] = data[j];
                 data[j] = tmp;
                 ++i;
@@ -310,10 +306,10 @@ class Roberto {
 
         /* recursion */
         if (left < j) {
-            this->quick_sort(data, left, j);
+            this->quicksort(data, left, j);
         }
         if (i < right) {
-            this->quick_sort(data, i, right);
+            this->quicksort(data, i, right);
         }
     }
 

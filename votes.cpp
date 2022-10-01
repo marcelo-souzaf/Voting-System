@@ -36,6 +36,10 @@ int main() {
             file << machine.search(i);
         }
         machine.describe();
+        Vector<Vote> results = machine.sorted_by_data();
+        for (int i = 0; i < results.size(); i++){
+            results[i].print();
+        }
 
         Date beginning = Date(std::time(nullptr));
         Date end = Date(std::time(nullptr)+1000);

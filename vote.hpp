@@ -19,8 +19,13 @@ class Vote {
         this->user_id = 0;
     }
 
-    ~Vote() {
-        this->user_id = 0;
+    Vote(const Vote& other) {
+        this->date = other.date;
+        this->user_id = other.user_id;
+        this->vote_id = other.vote_id;
+        this->candidate_id = other.candidate_id;
+        this->abbrev[0] = other.abbrev[0];
+        this->abbrev[1] = other.abbrev[1];
     }
 
     Vote(uint vote_id, uint user_id, short candidate_id, const char* abbrev) :

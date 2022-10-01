@@ -85,9 +85,8 @@ int admin(int choice, Roberto* machine){
         // handle_invalid_input();
 
         results = machine->sorted_by_data();
-        for (Vote &result : results){
-            result.print();
-            cout << endl;
+        for (int i = 0; i < results.size(); i++){
+            results[i].print();
         }
 
         wait(10000); // waits 10 secs
