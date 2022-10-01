@@ -237,10 +237,36 @@ class Date {
 
 };
 
+inline void show_number(std::ostream& out, int8 number) {
+    if (number < 10) {
+        out << '0';
+    }
+    out << +number;
+}
+
+inline void show_number(std::ostream& out, short number) {
+    if (number < 10) {
+        out << '0';
+    }
+    out << number;
+}
+
 std::ostream& operator<<(std::ostream& out, const Date& date) {
-    out << +date.year << '-' << +date.month << '-' << +date.day << ' ' << \
-        +date.hour << ':' << +date.minute << ':' << +date.second << \
-        ' ' << Time::week_days[date.weekday];
+    // out << << '-' << +date.month << '-' << +date.day << ' ' << \
+    //     +date.hour << ':' << +date.minute << ':' << +date.second << \
+    //     ' ' << Time::week_days[date.weekday];
+    show_number(out, date.year);
+    out << '-';
+    show_number(out, date.month);
+    out << '-';
+    show_number(out, date.day);
+    out << ' ';
+    show_number(out, date.hour);
+    out << ':';
+    show_number(out, date.minute);
+    out << ':';
+    show_number(out, date.second);
+    out << ' ' << Time::week_days[date.weekday];
     return out;
 }
 

@@ -1,24 +1,34 @@
 #ifndef VOTING_HPP_
 #define VOTING_HPP_
 
-#include <random>
-#include <string>
+#include <random>  // Para gerar números aleatórios
+#include <string>  // Para melhorar a mensagem de erro
 
 #include "./Vector.hpp"
 #include "./vote.hpp"
 #include "./stack.hpp"
 #define swap(v, i, j) { int temp = v[i]; v[i] = v[j]; v[j] = temp; }
 
+struct Aquario {
+    uint count;
+    short id;
+
+    Aquario(uint count, short id) : count(count), id(id) {}
+
+    bool operator<(const Aquario& other) const {
+        return count < other.count;
+    }
+};
+
 // Laguardia disse que é um bom nome para uma classe
 class Roberto {
- public:
-    Vote* data;
  private:
+    Vote* data;
     Stack deleted;
     uint capacity;
     uint current_idx;
+    uint candidate_count = 5; // candidate_id é um short, logo, 32767 valores distintos
     char* user_states;
-    uint candidate_count = 32767; // candidate_id é um short, logo, 32767 valores distintos
 
     void resize() {
         // Duplica a capacidade do array que armazena as informações de votos
@@ -30,10 +40,10 @@ class Roberto {
     }
 
  public:
-    Roberto(uint population_size=1'000'000) {
+    Roberto(uint population_size=1'000'000, uint candidate_count=20000) {
         // Inicializa a máquina de votos com uma capacidade de 8 votos
-        this->data = new Vote[8];
-        this->capacity = 8;
+        this->data = new Vote[6];
+        this->capacity = 6;
         this->current_idx = 0;
         const char states[27][3] = {"AC", "AL", "AP", "AM", "BA", "CE", "DF",
                                     "ES", "GO", "MA", "MT", "MS", "MG", "PA",
@@ -105,118 +115,79 @@ class Roberto {
     }
 
     // Cria uma cópia de todos os votos válidos atualmente e os ordena
-    Vector<Vote> sorted_by_data() {
-        Vector<Vote> result(this->current_idx - this->deleted.get_size());
-        Vote* sorted = result.data();
-        uint sorted_idx = 0;
+    Vector<Vote> sorted_by_date() {
+        Vector<Vote> sorted(this->current_idx - this->deleted.get_size());
         for (uint i = 0; i < this->current_idx; ++i) {
             if (this->data[i].get_user_id() != 0) {
-                sorted[sorted_idx++] = this->data[i];
+                sorted.push_back(this->data[i]);
             }
         }
-        quick_sort(sorted, 0, sorted_idx - 1);
-        return result;
+        quick_sort(sorted.data(), 0, sorted.size() - 1);
+        return sorted;
     }
 
-    short* topK_candidates(int k, Date beginning, Date end) {
-        short* top10 = new short[10];
-        uint* counts = votecount_by_date(beginning, end); 
-        uint temp[this->candidate_count];
-        for (uint i = 0; i < this->candidate_count; i++) {
-            temp[i] = counts[i];
+    Vector<uint> topK_candidates(uint k, Date beginning, Date end) {
+        Vector<uint> topK(k * 2);
+        Vector<uint> counts = votecount_by_date(beginning, end);
+        Vector<uint> indices(this->candidate_count);
+        for (uint i = 0; i < this->candidate_count; ++i) {
+            indices.push_back(i);
         }
-        int k_inv = this->candidate_count - k;
-        int element_kth = quickselect(temp, 0, this->candidate_count - 1, k_inv);
-        int aux = 0;
-        for (int i = 0; i < candidate_count; i++) {
-            if (counts[i] > element_kth) {
-                top10[aux++] = i;
-            }
-            if (aux == 10) {
-                break;
-            }
-        } 
-        // Separei em dois loops para lidar com empates (senão, haveria a possi-
-        // bilidade de retornar 10 dos candidatos com a quantidade de votos iguais
-        // ao k-ésimo maior, enquanto os valores maiores que o k-ésimo não seriam
-        // retornados)
-        for (int i = 0; i < candidate_count; i++) {
-            if (aux == 10) {
-                break;
-            }
-            if (counts[i] == element_kth) {
-                top10[aux++] = i;
-            }
+        this->quickselect(counts.data(), indices.data(), 0, this->candidate_count - 1, k);
+        for (uint i = k; k < this->candidate_count; ++i) {
+            topK.push_back(indices[i]);
+            topK.push_back(counts[indices[i]]);
         }
-        return top10;
+        return topK;
     }
 
-    short* topK_candidates(int k) {
-        short* top10 = new short[10];
-        uint* counts = votecount_by_date(); 
-        uint temp[this->candidate_count];
-        for (uint i = 0; i < this->candidate_count; i++) {
-            temp[i] = counts[i];
+    Vector<uint> topK_candidates(int k) {
+        Vector<uint> topK(k * 2);
+        Vector<uint> counts = votecount_by_date();
+        Vector<uint> indices(this->candidate_count);
+        for (uint i = 0; i < this->candidate_count; ++i) {
+            indices.push_back(i);
         }
-        int k_inv = this->candidate_count - k;
-        int element_kth = quickselect(temp, 0, this->candidate_count - 1, k_inv);
-        int aux = 0;
-        for (int i = 0; i < candidate_count; i++) {
-            if (counts[i] > element_kth) {
-                top10[aux++] = i;
-            }
-            if (aux == 10) {
-                break;
-            }
-        } 
-        // Separei em dois loops para lidar com empates (senão, haveria a possi-
-        // bilidade de retornar 10 dos candidatos com a quantidade de votos iguais
-        // ao k-ésimo maior, enquanto os valores maiores que o k-ésimo não seriam
-        // retornados)
-        for (int i = 0; i < candidate_count; i++) {
-            if (aux == 10) {
-                break;
-            }
-            if (counts[i] == element_kth) {
-                top10[aux++] = i;
-            }
+        this->quickselect(counts.data(), indices.data(), 0, this->candidate_count - 1, k);
+        for (uint i = this->candidate_count - k; i < this->candidate_count; ++i) {
+            topK.push_back(indices[i]);
+            topK.push_back(counts[indices[i]]);
         }
-        return top10;
+        return topK;
     }
     
-    uint* votecount_by_date(Date beginning, Date end) {
-        uint* votecount = new uint[this->candidate_count];
-        for (int i = 0; i < this->candidate_count; i++) {
-            votecount[i] = 0;
+    Vector<uint> votecount_by_date(Date beginning, Date end) {
+        Vector<uint> votecount(this->candidate_count);
+        for (int i = 0; i < this->candidate_count; ++i) {
+            votecount.push_back(0);
         }
-        for (uint i = 0; i < this->current_idx; i++) {
+        for (uint i = 0; i < this->current_idx; ++i) {
             if (this->data[i].get_user_id() != 0) {
                 if (this->data[i].get_date() >= beginning &&
                     this->data[i].get_date() <= end) {
-                    votecount[this->data[i].get_candidate_id()-1]++;
+                    ++votecount[this->data[i].get_candidate_id() - 1];
                 }
             }
         }
         return votecount;
     }
 
-    uint* votecount_by_date() {
-        uint* votecount = new uint[this->candidate_count];
-        for (int i = 0; i < this->candidate_count; i++) {
-            votecount[i] = 0;
+    Vector<uint> votecount_by_date() const {
+        Vector<uint> votecount(this->candidate_count);
+        for (uint i = 0; i < this->candidate_count; ++i) {
+            votecount.push_back(0);
         }
-        for (uint i = 0; i < this->current_idx; i++) {
+        for (uint i = 0; i < this->current_idx; ++i) {
             if (this->data[i].get_user_id() != 0) {
-                votecount[this->data[i].get_candidate_id()-1]++;
+                ++votecount[this->data[i].get_candidate_id() - 1];
             }
         }
         return votecount;
     }
-    
 
  private:
-    void quick_sort(Vote* data, uint left, uint right) {
-        uint i = left, j = right;
+    void quick_sort(Vote* data, int left, int right) {
+        int i = left, j = right;
         Vote tmp;
         Vote pivot = data[(left + right) / 2];
 
@@ -246,31 +217,34 @@ class Roberto {
         }
     }
 
-    int partition(uint v[], int p, int r) {
-        int pivot = v[r];
-        int j = p;
-        for (int i=p; i < r; i++) {
-            if (v[i] <= pivot) {
-                swap(v, i, j);
-                j++;
+    uint partition_idx(uint counts[], uint idx[], uint left, uint right) {
+        uint pivot = counts[right];
+        uint j = left;
+        for (uint i = left; i < right; ++i) {
+            if (counts[idx[i]] <= pivot) {
+                swap(idx, i, j);
+                ++j;
             }
         }
-        swap(v, j, r);
+        swap(idx, j, right);
         return j;
     }
 
-    int quickselect(uint v[], int left, int right, int x) {
-        if (x > 0 && x <= right - left + 1) {
-            int j = partition(v, left, right);
-            if (j - left == x - 1) {
-                return v[j];
-            }
-            if (j - left > x - 1) {
-                return quickselect(v, left, j - 1, x);
-            }
-            return quickselect(v, j + 1, right, x - j + left - 1);
+    void quickselect(uint counts[], uint idx[], uint left, uint right, uint k) {
+        if (k > right - left + 1) {
+            return;
         }
-        return -1;
+        uint j = this->partition_idx(counts, idx, left, right);
+        uint length = right - j + 1;
+        if (length == k) {
+            return;
+        }
+        else if (length > k) {
+            this->quickselect(counts, idx, j + 1, right, k);
+        }
+        else {
+            this->quickselect(counts, idx, left, j - 1, k - length);
+        }
     }
 };
 

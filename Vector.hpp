@@ -2,6 +2,7 @@
 #define VECTOR_HPP_
 
 #include <iostream>
+#include <vector>
 
 template <typename value_type>
 class Vector {
@@ -123,13 +124,70 @@ class Vector {
         }
         return this->_data[index];
     }
-
-    value_type* begin() {
-        return this->_data;
+    
+    // Usado apenas para os plots do matplotlib
+    std::vector<value_type> to_std_vector() const {
+        std::vector<value_type> std_vector;
+        std_vector.reserve(this->_size);
+        for (size_t i = 0; i < this->_size; ++i) {
+            std_vector.push_back(this->_data[i]);
+        }
+        return std_vector;
     }
 
-    value_type* end() {
-        return this->_data + this->_size - 1;
+    class Iterator {
+        value_type* ptr;
+
+     public:
+        explicit Iterator(value_type* ptr) {
+            this->ptr = ptr;
+        }
+
+        Iterator& operator++() {
+            this->ptr++;
+            return *this;
+        }
+
+        Iterator operator++(int) {
+            Iterator old = *this;
+            this->ptr++;
+            return old;
+        }
+
+        Iterator& operator--() {
+            this->ptr--;
+            return *this;
+        }
+
+        Iterator operator--(int) {
+            Iterator old = *this;
+            this->ptr--;
+            return old;
+        }
+
+        value_type* operator->() {
+            return this->ptr;
+        }
+
+        value_type operator*() const {
+            return *this->ptr;
+        }
+
+        value_type& operator*() {
+            return *this->ptr;
+        }
+
+        bool operator!=(const Iterator& other) const {
+            return this->ptr != other.ptr;
+        }
+    };
+
+    Iterator begin() {
+        return Iterator(this->_data);
+    }
+
+    Iterator end() {
+        return Iterator(this->_data + this->_size);
     }
 };
 

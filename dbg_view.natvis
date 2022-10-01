@@ -21,13 +21,13 @@
             </ArrayItems>
         </Expand>
     </Type>
-    <Type Name="Vetor&lt;*&gt;">
+    <Type Name="Vector&lt;*&gt;">
         <DisplayString>{_size}</DisplayString>
         <Expand>
             <Item Name="Capacity">_capacity</Item>
             <ArrayItems>
                 <Size>_size</Size>
-                <ValuePointer>data</ValuePointer>
+                <ValuePointer>_data</ValuePointer>
             </ArrayItems>
         </Expand>
     </Type>
