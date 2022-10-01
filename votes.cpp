@@ -9,8 +9,9 @@ using std::endl;
 
 int main() {
     cout << "Bytes da classe de voto: " << sizeof(Vote) << endl;
-    const uint population_size = 1000000U;
-    const uint candidate_count = 20000U;
+    const uint population_size = 1000000U;  // 1000000U
+    const uint candidate_count = 20000U;  // 20000U
+    const uint vote_count = 30U;  // 100000000U
 
     // Aleatoriza os votos com base no tempo atual
     std::random_device rd;
@@ -28,15 +29,19 @@ int main() {
         Roberto machine = Roberto(population_size, candidate_count);
 
         // Cuidado para não passar de 100 milhões
-        for (int i = 0; i < population_size; ++i) {
+        for (int i = 0; i < vote_count; ++i) {
             machine.vote(user_distrib(gen), candidate_distrib(gen),
                 std::time(nullptr) + time_distrib(gen));
         }
         // Passou perto de esgotar minha RAM e salvou um arquivo de 4,6 GB
-        for (int i = 0; i < population_size; ++i) {
+        for (int i = 0; i < vote_count; ++i) {
             file << machine.search(i);
         }
         machine.describe();
+        Vector<Vote> results = machine.sorted_by_date();
+        for (int i = 0; i < results.size(); i++){
+            results[i].print();
+        }
 
         Date beginning = Date(std::time(nullptr));
         Date end = Date(std::time(nullptr) + 1000);

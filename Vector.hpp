@@ -58,10 +58,6 @@ class Vector {
         temporary._data = nullptr;
     }
 
-    ~Vector() {
-        delete[] this->_data;
-    }
-
     Vector<value_type>& operator=(const Vector<value_type>& other) {
         this->_capacity = other._capacity;
         this->_size = other._size;

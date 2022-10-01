@@ -9,17 +9,6 @@
 #include "./stack.hpp"
 #define swap(v, i, j) { int temp = v[i]; v[i] = v[j]; v[j] = temp; }
 
-struct Aquario {
-    uint count;
-    short id;
-
-    Aquario(uint count, short id) : count(count), id(id) {}
-
-    bool operator<(const Aquario& other) const {
-        return count < other.count;
-    }
-};
-
 // Laguardia disse que é um bom nome para uma classe
 class Roberto {
  private:
@@ -39,8 +28,9 @@ class Roberto {
         delete[] old_data;
     }
 
+
  public:
-    Roberto(uint population_size=1'000'000, uint candidate_count=20000) {
+    Roberto(uint population_size=1000000, uint candidate_count=20000) {
         // Inicializa a máquina de votos com uma capacidade de 8 votos
         this->data = new Vote[6];
         this->capacity = 6;
@@ -122,7 +112,7 @@ class Roberto {
                 sorted.push_back(this->data[i]);
             }
         }
-        quick_sort(sorted.data(), 0, sorted.size() - 1);
+        quicksort(sorted.data(), 0, sorted.size() - 1);
         return sorted;
     }
 
@@ -186,21 +176,20 @@ class Roberto {
     }
 
  private:
-    void quick_sort(Vote* data, int left, int right) {
+    void quicksort(Vote* data, int left, int right) {
         int i = left, j = right;
         Vote tmp;
         Vote pivot = data[(left + right) / 2];
-
         /* partition */
         while (i <= j) {
             while (data[i].get_date() < pivot.get_date()) {
                 ++i;
             }
             while (data[j].get_date() > pivot.get_date()) {
-                ++j;
+                --j;
             }
             if (i <= j) {
-                tmp = data[i];
+                Vote tmp = data[i];
                 data[i] = data[j];
                 data[j] = tmp;
                 ++i;
@@ -210,10 +199,10 @@ class Roberto {
 
         /* recursion */
         if (left < j) {
-            this->quick_sort(data, left, j);
+            this->quicksort(data, left, j);
         }
         if (i < right) {
-            this->quick_sort(data, i, right);
+            this->quicksort(data, i, right);
         }
     }
 
