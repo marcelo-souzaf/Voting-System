@@ -64,9 +64,9 @@ class System {
         // Gera uma string com tamanho de 3 a 16 caracteres com um nome aleatório
         // para cada candidato
         uint length;
-        for (uint i = 2; i < size; i += 2) {
+        for (uint i = 1; i < candidate_count; ++i) {
             length = distrib(gen) / 2 + 3;
-            this->candidate_names[i] = new char[size];
+            this->candidate_names[i] = new char[candidate_count];
             this->candidate_names[i][0] = distrib_char(gen) - 32;
             for (uint j = 1; j < length - 1; ++j) {
                 this->candidate_names[i][j] = distrib_char(gen);
@@ -175,7 +175,7 @@ class System {
         }
         for (uint i = 0; i < pairs.size(); ++i) {
             std::cout << "ID do candidato: " << pairs[i].candidate_id << \
-            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id] << \
+            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id - 1] << \
             "\nQuantidade de votos: " << pairs[i].count << std::endl;
         }
         return pairs;
@@ -204,7 +204,7 @@ class System {
         }
         for (uint i = 0; i < pairs.size(); ++i) {
             std::cout << "ID do candidato: " << pairs[i].candidate_id << \
-            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id] << \
+            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id - 1] << \
             "\nQuantidade de votos: " << pairs[i].count << std::endl;
         }
         return pairs;

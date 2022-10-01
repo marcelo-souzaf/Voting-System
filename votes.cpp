@@ -55,7 +55,6 @@ int main() {
         // }
 
         Vector<uint> counts = machine.votecount_by_date();
-        for (uint i : counts) cout << i << endl;
         Vector<System::PairCount> id_count = machine.topK_sorted(3);
 
         file.close();
