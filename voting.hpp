@@ -175,14 +175,12 @@ class Roberto {
         return votecount;
     }
 
-    Vector<Vote> filter_by_state(Vector<Vote>, char* state) {
+    Vector<Vote> filter_by_state(Vector<Vote> vector, char* state) {
         Vector<Vote> filtered;
-        for (uint i = 0; i < this->current_idx; i++) {
-            if (this->data[i].get_user_id() != 0) {
-                if (this->data[i].get_abbrev()[0] == state[0] &&
-                    this->data[i].get_abbrev()[1] == state[1]) {
-                    filtered.push_back(this->data[i]);
-                }
+        for (uint i = 0; i < vector.size(); ++i) {
+            if (vector[i].get_abbrev()[0] == state[0] &&
+                vector[i].get_abbrev()[1] == state[1]) {
+                filtered.push_back(vector[i]);
             }
         }
         return filtered;
