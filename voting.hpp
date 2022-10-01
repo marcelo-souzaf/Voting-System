@@ -36,7 +36,7 @@ class Roberto {
 
 
  public:
-    Roberto(uint population_size=1'000'000) {
+    Roberto(uint population_size=1000000) {
         // Inicializa a máquina de votos com uma capacidade de 8 votos
         this->data = new Vote[8];
         this->capacity = 8;
@@ -287,7 +287,7 @@ class Roberto {
 
  private:
     void quick_sort(Vote* data, uint left, uint right) {
-        uint i = left, j = right;
+        int i = left, j = right;
         Vote tmp;
         Vote pivot = data[(left + right) / 2];
 

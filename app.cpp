@@ -64,32 +64,49 @@ int vote(Roberto* machine){
     }
     clear();
 
-    int code = machine->vote(id, candidate, "RJ", std::time(nullptr));
+    int code = machine->vote(id, candidate, std::time(nullptr));
     return code;
 }
 
 // function for dealing with admin choices
 int admin(int choice, Roberto* machine){
-    Vote* results;
+    Vector<Vote> results;
+    Roberto::PairCount* topid;
     char state[2];
     switch (choice)
     {
     case 0:
         choice = -1;
         break;
+    
     case 1:
-        cout << "Digite um estado para filtar o relatório, ou vazio caso não deseje filtrar.\nEstado: ";
-        cin >> state;
-        handle_invalid_input();
+        cout << "Digite um estado para filtar o relatório, ou vazio caso não deseje filtrar." << endl;
+        // cin >> state;
+        // handle_invalid_input();
 
         results = machine->sorted_by_data();
-        for (unsigned int v = 0; v < sizeof(results)/sizeof(results[0]); v++){
-            results[v].print();
+        for (Vote &result : results){
+            result.print();
             cout << endl;
         }
+
+        wait(10000); // waits 10 secs
+        clear();
+        
         break;
     
     case 2:
+        topid = machine->topK_sorted(10);
+        cout << "Top 10 candidatos: " << endl;
+        for (int i = 0; i < 10; i++) {
+            cout << "ID: " << topid[i].candidate_id << endl;
+            cout << "Contagem: " << topid[i].count << endl;
+        }
+        
+
+        wait(10000); // waits 10 secs
+
+        clear();
         break;
 
     default:
@@ -150,6 +167,7 @@ int main(){
             recieved.print();
 
             wait(5000); // waits 5 secs
+
             clear();
             break;
 
@@ -157,12 +175,12 @@ int main(){
             choice = -1;
             cout << "1. Exibir relatório de todos os votos computados." << endl;
             cout << "2. Exibir relatório dos 10 candidatos mais votados." << endl;
-            cout << "0. Retornar." << endl;
+            cout << "0. Retornar.\nOpção:" << endl;
             cin >> choice;
             handle_invalid_input();
             clear();
 
-            admin(choice, &machine);
+            choice = admin(choice, &machine);
 
             break;
 
