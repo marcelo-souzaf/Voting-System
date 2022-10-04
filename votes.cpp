@@ -2,7 +2,7 @@
 #include <ctime>
 #include <random>
 
-#include "./voting.hpp"
+#include "include/voting.hpp"
 
 using std::cout;
 using std::endl;
@@ -16,7 +16,7 @@ int main() {
     // Aleatoriza os votos com base no tempo atual
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint> user_distrib(1U, 1000000U);
+    std::uniform_int_distribution<uint> user_distrib(1U, population_size);
     std::uniform_int_distribution<short> candidate_distrib(1, 5);
     std::uniform_int_distribution<int> state_distrib(0, 26);
     std::uniform_int_distribution<int> time_distrib(-5 * Time::DAY, 5 * Time::DAY);
@@ -26,7 +26,7 @@ int main() {
 
     auto start = std::chrono::system_clock::now();
     try {
-        Roberto machine = Roberto(population_size, candidate_count);
+        System machine = System(population_size, candidate_count);
 
         // Cuidado para não passar de 100 milhões
         for (int i = 0; i < vote_count; ++i) {
@@ -38,10 +38,10 @@ int main() {
             file << machine.search(i);
         }
         machine.describe();
-        Vector<Vote> results = machine.sorted_by_date();
-        for (int i = 0; i < results.size(); i++){
-            results[i].print();
-        }
+        // Vector<Vote> results = machine.sorted_by_date();
+        // for (int i = 0; i < results.size(); i++){
+        //     results[i].print();
+        // }
 
         Date beginning = Date(std::time(nullptr));
         Date end = Date(std::time(nullptr) + 1000);
@@ -55,13 +55,7 @@ int main() {
         // }
 
         Vector<uint> counts = machine.votecount_by_date();
-        for (uint i : counts) cout << i << endl;
-        Vector<uint> id_count = machine.topK_candidates(3);
-        cout << "Top 10 candidatos: " << endl;
-        for (uint i = 0; i < id_count.size(); ++i) {
-            cout << "ID: " << id_count[i++] << endl;
-            cout << "Contagem: " << id_count[i] << endl;
-        }
+        Vector<System::PairCount> id_count = machine.topK_sorted(3);
 
         file.close();
     } catch (std::exception& e) {

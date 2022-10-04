@@ -41,15 +41,15 @@ class Stack {
         return this->data[--this->size];
     }
 
-    uint get_size() {
+    uint get_size() const {
         return this->size;
     }
 
-    uint get_capacity() {
+    uint get_capacity() const {
         return this->capacity;
     }
 
-    explicit operator bool() {
+    explicit operator bool() const {
         return this->size > 0;
     }
 };

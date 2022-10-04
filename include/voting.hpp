@@ -10,14 +10,15 @@
 #define swap(v, i, j) { int temp = v[i]; v[i] = v[j]; v[j] = temp; }
 
 // Laguardia disse que é um bom nome para uma classe
-class Roberto {
+class System {
  private:
     Vote* data;
     Stack deleted;
     uint capacity;
     uint current_idx;
-    uint candidate_count = 5; // candidate_id é um short, logo, 32767 valores distintos
     char* user_states;
+    uint candidate_count; // candidate_id é um short, logo, 32767 valores distintos
+    char** candidate_names;
 
     void resize() {
         // Duplica a capacidade do array que armazena as informações de votos
@@ -35,13 +36,18 @@ class Roberto {
         short candidate_id;
         PairCount() {}
         PairCount(uint count, short candidate_id) : candidate_id(candidate_id), count(count) {}
+
+        bool operator<(const PairCount& other) const {
+            return this->count < other.count;
+        }
     };
 
-    Roberto(uint population_size=1000000, uint candidate_count=20000) {
+    System(uint population_size=1000000, uint candidate_count=20000) {
         // Inicializa a máquina de votos com uma capacidade de 8 votos
         this->data = new Vote[6];
         this->capacity = 6;
         this->current_idx = 0;
+        this->candidate_count = candidate_count;
         const char states[27][3] = {"AC", "AL", "AP", "AM", "BA", "CE", "DF",
                                     "ES", "GO", "MA", "MT", "MS", "MG", "PA",
                                     "PB", "PR", "PE", "PI", "RJ", "RN", "RS",
@@ -49,12 +55,24 @@ class Roberto {
         // Inicializa as informações dos usuários, no caso, o estado
         const uint size = population_size * 2 + 2;
         this->user_states = new char[size];
-        this->user_states[0] = '\0';
-        this->user_states[1] = '\0';
+        this->candidate_names = new char*[this->candidate_count];
         // Gerador de números aleatórios que ajuda a definir um estado para cada usuário
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<uint> distrib(0, 26);
+        std::uniform_int_distribution<char> distrib_char(97, 122);
+        // Gera uma string com tamanho de 3 a 16 caracteres com um nome aleatório
+        // para cada candidato
+        uint length;
+        for (uint i = 1; i < candidate_count; ++i) {
+            length = distrib(gen) / 2 + 3;
+            this->candidate_names[i] = new char[candidate_count];
+            this->candidate_names[i][0] = distrib_char(gen) - 32;
+            for (uint j = 1; j < length - 1; ++j) {
+                this->candidate_names[i][j] = distrib_char(gen);
+            }
+            this->candidate_names[i][length] = '\0';
+        }
         uint state_index;
         for (uint i = 2; i < size; ++i) {
             state_index = distrib(gen);
@@ -63,9 +81,13 @@ class Roberto {
         }
     }
 
-    ~Roberto() {
+    ~System() {
         delete[] this->data;
         delete[] this->user_states;
+        for (uint i = 0; i < this->candidate_count; ++i) {
+            delete[] this->candidate_names[i];
+        }
+        delete[] this->candidate_names;
     }
 
     uint get_vote_count() const {
@@ -130,7 +152,7 @@ class Roberto {
     // Função que engloba a seleção dos topK candidatos, retornando
     // uma Vector de structs que contém o id do candidato e a sua respectiva
     // quantidade de votos, ordenada por essa quantidade
-    Vector<PairCount> topK_sorted(uint k, Date beginning, Date end) {
+    Vector<PairCount> topK_sorted(uint k, Date beginning, Date end, bool show = true) {
         Vector<PairCount> pairs = this->topK_candidates(k, beginning, end);
         // Bubble sort otimizado, bom para esse contexto
         // pois o vetor está próximo de ser ordenado
@@ -140,7 +162,7 @@ class Roberto {
         for (int i = 0; i < k; ++i) {
             bool flag = false;
             for (int j = 0; j < k-i-1; ++j) {
-                if (pairs[j].count < pairs[j+1].count) {
+                if (pairs[j] < pairs[j+1]) {
                     flag = true;
                     temp = pairs[j];
                     pairs[j] = pairs[j+1];
@@ -151,10 +173,15 @@ class Roberto {
                 break;
             }
         }
+        for (uint i = 0; i < pairs.size(); ++i) {
+            std::cout << "ID do candidato: " << pairs[i].candidate_id << \
+            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id - 1] << \
+            "\nQuantidade de votos: " << pairs[i].count << std::endl;
+        }
         return pairs;
     }
 
-    Vector<PairCount> topK_sorted(uint k) {
+    Vector<PairCount> topK_sorted(uint k, bool show = true) {
         Vector<PairCount> pairs = this->topK_candidates(k);
         // Bubble sort otimizado, bom para esse contexto
         // pois o vetor está próximo de ser ordenado
@@ -164,7 +191,7 @@ class Roberto {
         for (int i = 0; i < k; ++i) {
             bool flag = false;
             for (int j = 0; j < k-i-1; ++j) {
-                if (pairs[j].count < pairs[j+1].count) {
+                if (pairs[j] < pairs[j+1]) {
                     flag = true;
                     temp = pairs[j];
                     pairs[j] = pairs[j+1];
@@ -174,6 +201,11 @@ class Roberto {
             if (!flag) {
                 break;
             }
+        }
+        for (uint i = 0; i < pairs.size(); ++i) {
+            std::cout << "ID do candidato: " << pairs[i].candidate_id << \
+            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id - 1] << \
+            "\nQuantidade de votos: " << pairs[i].count << std::endl;
         }
         return pairs;
     }
@@ -239,17 +271,6 @@ class Roberto {
             }
         }
         return votecount;
-    }
-
-    Vector<Vote> filter_by_state(Vector<Vote> vector, char* state) {
-        Vector<Vote> filtered;
-        for (uint i = 0; i < vector.size(); ++i) {
-            if (vector[i].get_abbrev()[0] == state[0] &&
-                vector[i].get_abbrev()[1] == state[1]) {
-                filtered.push_back(vector[i]);
-            }
-        }
-        return filtered;
     }
 
  private:

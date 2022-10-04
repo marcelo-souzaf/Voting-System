@@ -2,7 +2,6 @@
 #define VECTOR_HPP_
 
 #include <iostream>
-#include <vector>
 
 template <typename value_type>
 class Vector {
@@ -56,6 +55,10 @@ class Vector {
         this->_capacity = temporary._capacity;
         this->_data = temporary._data;
         temporary._data = nullptr;
+    }
+
+    ~Vector() {
+        delete[] this->_data;
     }
 
     Vector<value_type>& operator=(const Vector<value_type>& other) {
@@ -119,16 +122,6 @@ class Vector {
             throw std::out_of_range("Índice fora de alcance.");
         }
         return this->_data[index];
-    }
-    
-    // Usado apenas para os plots do matplotlib
-    std::vector<value_type> to_std_vector() const {
-        std::vector<value_type> std_vector;
-        std_vector.reserve(this->_size);
-        for (size_t i = 0; i < this->_size; ++i) {
-            std_vector.push_back(this->_data[i]);
-        }
-        return std_vector;
     }
 
     class Iterator {
