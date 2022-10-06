@@ -58,7 +58,7 @@ int vote(System* machine){
     }
     cout << "Digite o número do candidato em que deseja votar: ";
     cin >> candidate;
-    if (handle_invalid_input() || id <= 0){
+    if (handle_invalid_input() || candidate <= 0){
         clear();
         return -1;
     }
@@ -96,12 +96,6 @@ int admin(int choice, System* machine){
     
     case 2:
         topid = machine->topK_sorted(10);
-        cout << "Top 10 candidatos: " << endl;
-        for (int i = 0; i < 10; i++) {
-            cout << "ID: " << topid[i].candidate_id << endl;
-            cout << "Contagem: " << topid[i].count << endl;
-        }
-        
 
         wait(10000); // waits 10 secs
 

@@ -134,7 +134,7 @@ class System {
     void describe() const {
         std::cout << "Capacidade atual: " << this->capacity << std::endl;
         std::cout << "Contagem de votos: " << this->get_vote_count() << std::endl;
-        std::cout << "Quantidade de votos apagados: " << this->deleted.get_size() << std::endl;
+        std::cout << "Quantidade de votos apagados: " << this->deleted.get_size() << std::endl << std::endl;
     }
 
     // Cria uma cópia de todos os votos válidos atualmente e os ordena
@@ -175,8 +175,8 @@ class System {
         }
         for (uint i = 0; i < pairs.size(); ++i) {
             std::cout << "ID do candidato: " << pairs[i].candidate_id << \
-            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id - 1] << \
-            "\nQuantidade de votos: " << pairs[i].count << std::endl;
+            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id + 1] << \
+            "\nQuantidade de votos: " << pairs[i].count << std::endl << std::endl;
         }
         return pairs;
     }
@@ -204,16 +204,13 @@ class System {
         }
         for (uint i = 0; i < pairs.size(); ++i) {
             std::cout << "ID do candidato: " << pairs[i].candidate_id << \
-            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id - 1] << \
+            "\nNome do candidato: " << this->candidate_names[pairs[i].candidate_id + 1] << \
             "\nQuantidade de votos: " << pairs[i].count << std::endl;
         }
         return pairs;
     }
 
     Vector<PairCount> topK_candidates(uint k, Date beginning, Date end) {
-        if (k >= this->get_vote_count()) {
-            throw std::invalid_argument("Número especificado deve ser menor que o número de votos.");
-        }
         Vector<PairCount> topK(k);
         Vector<uint> counts = votecount_by_date(beginning, end);
         Vector<uint> indices(this->candidate_count);
@@ -228,9 +225,6 @@ class System {
     }
 
     Vector<PairCount> topK_candidates(int k) {
-        if (k >= this->get_vote_count()) {
-            throw std::invalid_argument("Número especificado deve ser menor que o número de votos.");
-        }
         Vector<PairCount> topK(k);
         Vector<uint> counts = votecount_by_date();
         Vector<uint> indices(this->candidate_count);
