@@ -1,6 +1,5 @@
 #include <iostream>
 #include <ctime>
-//nanosleep()
 
 #include "include/voting.hpp"
 
@@ -8,7 +7,7 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-// function for clearing the console based on which console you are in.
+// Função para limpar o terminal baseado no OS em que está.
 void clear()
 {
 #if defined _WIN32
@@ -20,7 +19,7 @@ void clear()
 #endif
 }
 
-// function for freezing excecution for miliseconds.
+// Função para congelar a execução do programa (em ms)
 // based on https://man7.org/linux/man-pages/man2/nanosleep.2.html
 int wait(long miliseconds)
 {
@@ -33,7 +32,7 @@ int wait(long miliseconds)
    return nanosleep(&req , &rem);
 }
 
-// function for handling when there's any error on a cin input.
+// Função para tratar qualquer tipo de erro vindo de um cin
 bool handle_invalid_input(){
     if (cin.fail()) {
         cin.clear();
@@ -47,7 +46,7 @@ bool handle_invalid_input(){
     }
 }
 
-// function for voting interface
+// Função para inserção do voto.
 int vote(System* machine){
     int id, candidate;
     cout << "Digite seu ID: ";
@@ -68,7 +67,7 @@ int vote(System* machine){
     return code;
 }
 
-// function for dealing with admin choices
+// Função para controlar as escolhar do admin.
 int admin(int choice, System* machine){
     Vector<Vote> results;
     Vector<System::PairCount> topid;
@@ -81,23 +80,28 @@ int admin(int choice, System* machine){
     
     case 1:
         cout << "Digite um estado para filtar o relatório, ou vazio caso não deseje filtrar." << endl;
-        // cin >> state;
-        // handle_invalid_input();
+        cin >> state;
+        handle_invalid_input();
 
         results = machine->sorted_by_date();
-        for (int i = 0; i < results.size(); i++){
+        if (65 <= state[0] && state[0] <= 90 && 65 <= state[1] && state[1] <= 90) {
+            cout << "Lista filtrada:" << endl;
+            results = machine->filter_by_state(results, state);
+        }
+
+        for (int i = 0; i < results.size(); ++i){
             results[i].print();
         }
 
         wait(10000); // waits 10 secs
         clear();
-        
+
         break;
     
     case 2:
         topid = machine->topK_sorted(10);
 
-        wait(10000); // waits 10 secs
+        // wait(10000); // waits 10 secs
 
         clear();
         break;
@@ -111,15 +115,15 @@ int admin(int choice, System* machine){
 
 int main(){
     clear();
-    // declaring and initializing some vars
+    // Declarando e inicializando algumas variáveis.
     int choice = -1;
     int code;
     Vote received;
     System machine = System();
-    // main loop
+    // Loop principal
     while (choice != 0)
     {   
-        // first option screen
+        // Primeira tela de escolhas.
         cout << "Bem-vindo às eleições da FGV\nEscolha a opção desejada: " << endl;
         cout << "1. Votar em um candidato." << endl;
         cout << "2. Consultar seu voto." << endl;
@@ -135,19 +139,19 @@ int main(){
             break;
 
         case 1:
-            // computes voting
+            // Computa o voto
             code = vote(&machine);
 
-            if (code != -1){ // if vote has been valid
+            if (code != -1){ // Se o voto foi válido
                 cout << "Seu recibo é: " << code << endl;
-                wait(2000); // waits 2 secs
+                wait(2000); // Aguarda 2 segundos.
             }
 
             clear();
             break;
 
         case 2:
-            // returns a vote
+            // Retorna o voto.
             cout << "Digite o número do seu recibo: ";
             cin >> code;
             if (handle_invalid_input()){
@@ -159,7 +163,7 @@ int main(){
 
             received.print();
 
-            wait(5000); // waits 5 secs
+            wait(5000); // Aguarda 5 segundos.
 
             clear();
             break;
@@ -179,7 +183,7 @@ int main(){
 
         default:
             cout << "Opção inválida! Insira uma das opções listadas. Aguarde." << endl;
-            wait(2000); // waits 2 secs
+            wait(2000); // Aguarda 2 segundos.
             clear();
             break;
         }

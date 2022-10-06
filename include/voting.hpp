@@ -149,6 +149,17 @@ class System {
         return sorted;
     }
 
+    static Vector<Vote> filter_by_state(const Vector<Vote>& vector, char* state) {
+        Vector<Vote> filtered;
+        for (uint i = 0; i < vector.size(); ++i) {
+            if (vector[i].get_abbrev()[0] == state[0] &&
+                vector[i].get_abbrev()[1] == state[1]) {
+                filtered.push_back(vector[i]);
+            }
+        }
+        return filtered;
+    }
+
     // Função que engloba a seleção dos topK candidatos, retornando
     // uma Vector de structs que contém o id do candidato e a sua respectiva
     // quantidade de votos, ordenada por essa quantidade
